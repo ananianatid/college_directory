@@ -32,7 +32,8 @@ class StudentResource extends Resource
                                     ->image()
                                     ->directory('students/photos')
                                     ->label('Photo de profil'),
-                                Forms\Components\Grid::make(2)
+                                Forms\Components\Grid::make()
+                                    ->columns(2)
                                     ->schema([
                                         Forms\Components\TextInput::make('last_name')
                                             ->required()
@@ -43,7 +44,8 @@ class StudentResource extends Resource
                                             ->label('Prénoms')
                                             ->maxLength(255),
                                     ]),
-                                Forms\Components\Grid::make(3)
+                                Forms\Components\Grid::make()
+                                    ->columns(3)
                                     ->schema([
                                         Forms\Components\DatePicker::make('birth_date')
                                             ->required()
@@ -67,7 +69,8 @@ class StudentResource extends Resource
                         Forms\Components\Tabs\Tab::make('Académie')
                             ->icon('heroicon-o-academic-cap')
                             ->schema([
-                                Forms\Components\Grid::make(2)
+                                Forms\Components\Grid::make()
+                                    ->columns(2)
                                     ->schema([
                                         Forms\Components\Select::make('filiere_id')
                                             ->relationship('filiere', 'name')
@@ -138,7 +141,8 @@ class StudentResource extends Resource
                                 Forms\Components\TextInput::make('parent_name')
                                     ->required()
                                     ->label('Nom & Prénoms du Parent'),
-                                Forms\Components\Grid::make(2)
+                                Forms\Components\Grid::make()
+                                    ->columns(2)
                                     ->schema([
                                         Forms\Components\TextInput::make('parent_profession')
                                             ->required()
@@ -149,7 +153,8 @@ class StudentResource extends Resource
                                 Forms\Components\TextInput::make('parent_address')
                                     ->required()
                                     ->label('Adresse Parent'),
-                                Forms\Components\Grid::make(3)
+                                Forms\Components\Grid::make()
+                                    ->columns(3)
                                     ->schema([
                                         Forms\Components\TextInput::make('parent_office_phone')
                                             ->tel()
@@ -234,7 +239,12 @@ class StudentResource extends Resource
                 Tables\Columns\TextColumn::make('full_name') // We need to add this property to the model later or use simple concatenation
                     ->label('Nom & Prénoms')
                     ->getStateUsing(fn ($record) => "{$record->last_name} {$record->first_names}")
-                    ->searchable(['last_name', 'first_names']),
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->where(function (Builder $query) use ($search) {
+                            $query->where('last_name', 'like', "%{$search}%")
+                                ->orWhere('first_names', 'like', "%{$search}%");
+                        });
+                    }),
                 Tables\Columns\TextColumn::make('filiere.name')
                     ->badge()
                     ->sortable()
@@ -243,11 +253,12 @@ class StudentResource extends Resource
                     ->label('Niveau'),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn ($state): string => match ($state) {
                         'actif' => 'success',
                         'suspendu' => 'danger',
                         'diplome' => 'info',
                         'abandon' => 'gray',
+                        default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('payment_status')
                     ->badge()

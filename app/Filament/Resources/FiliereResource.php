@@ -43,9 +43,10 @@ class FiliereResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('pole')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn ($state): string => match ($state) {
                         'Technologique' => 'info',
                         'Tertiaire' => 'warning',
+                        default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

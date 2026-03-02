@@ -27,11 +27,11 @@ class StudentObserver
             $student->matricule = "DEF-$year-" . str_pad((string)$sequence, 4, '0', STR_PAD_LEFT);
         }
 
-        // 2. Generate Academic Email (Format: first_initial.last_name@defitech.tg)
+        // 2. Generate Academic Email (Format: PremierPrenomNom@defitech.tg)
         if (!$student->academic_email) {
-            $firstInitial = Str::lower(substr($student->first_names, 0, 1));
+            $firstName = Str::slug($student->first_names, '');
             $lastName = Str::slug($student->last_name, '');
-            $baseEmail = "{$firstInitial}.{$lastName}";
+            $baseEmail = Str::ucfirst($firstName) . Str::ucfirst($lastName);
             $domain = "@defitech.tg";
             $email = $baseEmail . $domain;
 
