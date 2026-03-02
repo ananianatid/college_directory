@@ -14,14 +14,16 @@ class StudentCredentialsNotification extends Notification implements ShouldQueue
 
     protected $email;
     protected $password;
+    protected $firstName;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($email, $password)
+    public function __construct($email, $password, $firstName)
     {
         $this->email = $email;
         $this->password = $password;
+        $this->firstName = $firstName;
     }
 
     /**
@@ -39,9 +41,9 @@ class StudentCredentialsNotification extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $mail = (new MailMessage)
+        return (new MailMessage)
             ->subject('Vos identifiants Defitech')
-            ->greeting("Bonjour {$notifiable->first_names},")
+            ->greeting("Bonjour {$this->firstName},")
             ->line('Votre inscription à Defitech a été validée.')
             ->line('Voici vos identifiants pour accéder aux services numériques de l\'université')
             ->line('**Email académique :** ' . $this->email)
@@ -50,16 +52,6 @@ class StudentCredentialsNotification extends Notification implements ShouldQueue
             ->line('Il est fortement conseillé de changer votre mot de passe lors de votre première connexion.')
             ->line('Cordialement,')
             ->line('L\'administration Defitech');
-
-        // Log to database (Queue for later sending)
-        EmailToBeSent::create([
-            'recipient_email' => $notifiable->personal_email ?? $notifiable->email,
-            'recipient_name' => "{$notifiable->first_names} {$notifiable->last_name}",
-            'subject' => 'Vos identifiants Defitech',
-            'content' => "Email: {$this->email}\nPassword: {$this->password}",
-        ]);
-
-        return $mail;
     }
 
     /**

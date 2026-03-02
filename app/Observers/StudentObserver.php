@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\StudentCredentialsNotification;
+use App\Models\EmailToBeSent;
 
 class StudentObserver
 {
@@ -27,11 +28,13 @@ class StudentObserver
             $student->matricule = "DEF-$year-" . str_pad((string)$sequence, 4, '0', STR_PAD_LEFT);
         }
 
-        // 2. Generate Academic Email (Format: PremierPrenomNom@defitech.tg)
+        // 2. Generate Academic Email (Format: NomPremierPrenom@defitech.tg)
         if (!$student->academic_email) {
-            $firstName = Str::slug($student->first_names, '');
+            $namesArray = explode(' ', trim($student->first_names));
+            $firstPrenom = Str::slug($namesArray[0], '');
             $lastName = Str::slug($student->last_name, '');
-            $baseEmail = Str::ucfirst($firstName) . Str::ucfirst($lastName);
+
+            $baseEmail = Str::ucfirst($lastName) . Str::ucfirst($firstPrenom);
             $domain = "@defitech.tg";
             $email = $baseEmail . $domain;
 
@@ -66,8 +69,16 @@ class StudentObserver
 
             // 4. Notify student via personal email (Strategy 1)
             if ($student->personal_email) {
+                // Log synchronously for immediate admin visibility
+                EmailToBeSent::create([
+                    'recipient_email' => $student->personal_email,
+                    'recipient_name' => "{$student->first_names} {$student->last_name}",
+                    'subject' => 'Vos identifiants Defitech',
+                    'content' => "Email académique: {$student->academic_email}\nMot de passe temporaire: {$password}",
+                ]);
+
                 \Illuminate\Support\Facades\Notification::route('mail', $student->personal_email)
-                    ->notify(new StudentCredentialsNotification($student->academic_email, $password));
+                    ->notify(new StudentCredentialsNotification($student->academic_email, $password, $student->first_names));
             }
         }
     }
