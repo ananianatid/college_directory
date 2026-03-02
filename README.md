@@ -1,59 +1,55 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Système d'Annuaire Universitaire (Defitech)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 1. Présentation du Projet
 
-## About Laravel
+L'université souhaite mettre en place un système d'annuaire centralisé. Ce projet vise à simplifier la gestion des identités numériques au sein de l'établissement et à servir de socle de données pour tous les services numériques futurs (bibliothèque, portail de notes, accès réseau, etc.).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### 1.1 Objectifs principaux
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Centralisation :** Regrouper en un seul lieu les données de toutes les personnes travaillant ou étudiant à l'université.
+    
+- **Identité Numérique :** Automatiser la création d'adresses email institutionnelles.
+    
+- **Interopérabilité :** Permettre aux autres logiciels de l'université de consulter les données de manière sécurisée via une interface programmable (API).
+    
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 2. Périmètre du Système
 
-## Learning Laravel
+Le système doit gérer l'ensemble des profils rattachés à l'institution.
+### 2.1 Populations concernées
+L'annuaire doit être capable de stocker et de distinguer les catégories suivantes 
+- **Corps Étudiant :** Inscrits dans les différentes filières.
+- **Corps Enseignant :** Professeurs permanents et vacataires.
+- **Personnel Administratif :** Comptables, secrétariats, direction.
+- **Personnel de Soutien :** Surveillants, concierges, agents de maintenance.
+### 2.2 Informations à collecter (Données de base)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Pour chaque individu, le système doit enregistrer au minimum :
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Identité :** Nom, prénoms, sexe, date de naissance.
+- **Contact :** Téléphone, adresse email personnelle (pour la récupération).
+- **Professionnel :** Matricule unique, fonction/rôle, département de rattachement.
+## 3. Besoins Fonctionnels
 
-## Laravel Sponsors
+### F1 : Gestion des Inscriptions et Profils
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Le système doit permettre l'importation ou la saisie des nouvelles recrues et des nouveaux étudiants. Chaque fiche doit pouvoir être mise à jour (changement de statut : actif, suspendu, diplômé).
 
-### Premium Partners
+### F2 : Attribution automatique d'Emails
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Dès qu'une personne est enregistrée avec un statut "Actif", le système doit :
 
-## Contributing
+1. Générer une adresse email basée sur une règle de nommage précise (ex: `p.nom@defitech.tg`).
+2. Vérifier que l'adresse n'est pas déjà attribuée (gestion des homonymes).
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### F3 : Exposition des données (API)
 
-## Code of Conduct
+Le système ne doit pas rester "fermé". Il doit mettre à disposition des outils pour que d'autres applications puissent :
+- Vérifier si un matricule est valide.
+- Récupérer la liste des étudiants d'une filière spécifique.
+- Authentifier un utilisateur pour un service tiers.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 4. Règles de Gestion et Contraintes
+- **Unicité du matricule :** Chaque individu possède un et un seul matricule à vie au sein de l'institution.
+- **Confidentialité :** Les données personnelles (adresse, téléphone) ne doivent être accessibles qu'aux administrateurs et via des accès API sécurisés.
+- **Disponibilité :** L'annuaire étant le cœur du système, il doit être accessible en permanence par les applications tierces.
