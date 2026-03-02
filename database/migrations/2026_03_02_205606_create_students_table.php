@@ -20,6 +20,7 @@ return new class extends Migration {
             $table->string('birth_place');
             $table->string('nationality');
             $table->enum('gender', ['M', 'F']);
+            $table->string('photo_path')->nullable();
 
             // [Academic Background]
             $table->string('bac_series');
@@ -56,6 +57,11 @@ return new class extends Migration {
             $table->string('bac_certificate_path')->nullable()->comment('L\'attestation du bac');
             $table->string('birth_certificate_path')->nullable()->comment('L\'acte de naissance');
             $table->string('registration_form_path')->nullable()->comment('La fiche d\'inscription scannée');
+
+            // [Status & Soft Deletes]
+            $table->enum('status', ['actif', 'suspendu', 'diplome', 'abandon'])->default('actif');
+            $table->enum('registration_status', ['en_attente', 'valide', 'rejete'])->default('en_attente');
+            $table->softDeletes();
 
             $table->timestamps();
         });
