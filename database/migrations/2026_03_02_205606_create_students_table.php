@@ -10,8 +10,9 @@ return new class extends Migration {
         Schema::create('students', function (Blueprint $table) {
             $table->id();
 
-            // [Matricule] - Auto-generated unique identifier
+            // [Matricule & Auth] - Auto-generated unique identifier
             $table->string('matricule')->unique();
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
 
             // [Personal Information]
             $table->string('last_name'); // UpperCase
