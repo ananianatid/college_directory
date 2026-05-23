@@ -1,4 +1,33 @@
-# Système d'Annuaire Universitaire (Defitech)
+# Annuaire Universitaire (Defitech)
+
+Systeme d'annuaire centralise gerant les identites (etudiants, enseignants, personnel), auto-generant les emails institutionnels et exposant les donnees via une API REST.
+
+## Stack technique
+
+- PHP 8.2+
+- Laravel 12
+- Filament 3 (admin panel)
+- Tailwind CSS 4 / Vite
+
+## Etat d'avancement
+
+En developpement -- squelette Laravel avec Filament installe, modeles Student/Filiere, migrations et route API en place.
+
+## Demarrage
+
+```bash
+composer setup
+# ou etape par etape :
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan db:seed
+npm install
+
+composer dev
+```
+
+---
 
 ## 1. Présentation du Projet
 
